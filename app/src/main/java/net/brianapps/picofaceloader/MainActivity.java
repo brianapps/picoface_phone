@@ -18,6 +18,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 package net.brianapps.picofaceloader;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -300,6 +301,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        snapsZip = null;
+
         for (File f : getExternalFilesDirs("snaps")) {
             File zipfile = new File(f, "snaps.zip");
             if (zipfile.exists()) {
@@ -307,12 +310,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (snapsZip == null) {
+            StringBuilder sb = new StringBuilder("The snaps.zip file was not found. Please copy this file to one of these locations:");
+            for (File f : getExternalFilesDirs("snaps")) {
+                sb.append("\r\n").append(f.getPath());
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle("snapshot file not found").setMessage(sb.toString())
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) ->{})
+                    .show();
+        }
+
 
         ArrayList<String> snapShots = getSnapshotFileNames(snapsZip);
-
-
         String[] arrayOfNames = snapShots.toArray(new String[snapShots.size()]);
-
         Arrays.sort(arrayOfNames);
         ArrayAdapter<String> listAdaptor;
         listAdaptor = new StoreListAdaptor(this, arrayOfNames);
